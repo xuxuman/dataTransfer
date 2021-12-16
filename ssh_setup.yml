@@ -1,0 +1,76 @@
+---
+# ====================================================================
+#                                                                    =
+#                      BASE24-eps Ansible Installer                  =
+#                                                                    =
+#                      Proprietary Software Product                  =
+#                                                                    =
+#                          ACI Worldwide Corp.                       =
+#                          6060 Coventry Drive                       =
+#                       Elkhorn, Nebraska  68022                     =
+#                           (402) 390-7600                           =
+#                                                                    =
+#                  Copyright 2020 by ACI Worldwide Corp.             =
+#                          All Rights Reserved                       =
+#                                                                    =
+# ====================================================================
+
+# execute setup of SSH keys on localhost
+#
+- hosts: ansible_controller
+
+  tasks:
+  - name: "ansible_controller - create ~/.ssh"
+    file:
+      path: "~/.ssh"
+      state: directory
+      mode: 0700
+
+  - name: "ansible_controller - create ~/.ssh/config"
+    file:
+      path: "~/.ssh/config"
+      state: touch
+      mode: 0700
+
+  - name: "ansible_controller - set in .ssh/config: StrictHostKeyChecking no"
+    blockinfile:
+      path: "~/.ssh/config"
+      insertbefore: BOF
+      marker: "# {mark} set StrictHostKeyChecking no"
+      block: |
+        Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null
+
+  - name: "ansible_controller - load sshpass"
+    become: yes
+    package:
+      name: sshpass
+      state: latest
+
+- hosts: all
+
+  tasks:
+    - name: Check SSH dir
+      stat: path=~/.ssh/id_rsa.pub
+      register: ssh_rsa_pub
+
+    - name: Create public key
+      openssh_keypair:
+        path: ~/.ssh/id_rsa
+      when: ( ssh_rsa_pub.stat.exists == false )
+
+- hosts: all
+
+  tasks:
+    - name: fetch all public ssh keys
+      shell: cat ~/.ssh/id_rsa.pub
+      register: ssh_keys
+
+    - name: check keys
+      debug: msg="{{ ssh_keys.stdout }}"
+
+    - name: deploy keys on all servers
+      authorized_key: 
+        user: "{{ ansible_user }}" 
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
