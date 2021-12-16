@@ -17,7 +17,7 @@
 
 # execute setup of SSH keys on localhost
 #
-- hosts: ansible_controller
+- hosts: master
 
   tasks:
   - name: "ansible_controller - create ~/.ssh"
