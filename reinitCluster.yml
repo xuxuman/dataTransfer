@@ -1,0 +1,13 @@
+---
+- hosts: all
+  tasks:
+  - name: "kubeadm reset"
+    become: yes
+    shell: kubeadm reset
+- hosts: master
+  tasks:
+  - name: "cleanUp"
+    shell: rm -rf /home/administrator/.kube
+  - name: "init"
+    become: yes
+    shell: kubeadm init --pod-network-cidr=10.244.0.0/16 | tee init.log    
