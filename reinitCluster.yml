@@ -15,4 +15,4 @@
     become: true
     shell: mkdir -p $HOME/.kube && sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config && sudo chown $(id -u):$(id -g) $HOME/.kube/config
   - name: " install the flannel container network interface"
-    shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
+    shell: kubectl apply -f kubectl apply -f https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml
