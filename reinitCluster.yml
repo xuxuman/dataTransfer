@@ -3,7 +3,7 @@
   tasks:
   - name: "kubeadm reset"
     become: yes
-    shell: kubeadm reset
+    shell: echo y|kubeadm reset
 - hosts: master
   tasks:
   - name: "cleanUp"
