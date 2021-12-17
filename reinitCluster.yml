@@ -10,4 +10,6 @@
     shell: rm -rf /home/administrator/.kube
   - name: "init"
     become: yes
-    shell: kubeadm init --pod-network-cidr=10.244.0.0/16 | tee init.log    
+    shell: kubeadm init --pod-network-cidr=10.244.0.0/16 | tee init.log
+  - name: "config allowance for administrator to use k8s"
+    shell: mkdir -p $HOME/.kube && sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config && sudo chown $(id -u):$(id -g) $HOME/.kube/config
